@@ -19,16 +19,15 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class GetData {
     public GetData() throws IOException {
-//        LogManager.getLogManager().readConfiguration(new FileInputStream(new File(Constant.LOG_CONFIG_FILE).getAbsolutePath()));
+        LogManager.getLogManager().readConfiguration(new FileInputStream(new File(Constant.LOG_CONFIG_FILE).getAbsolutePath()));
     }
 
     private static final Logger LOG = Logger.getLogger(GetData.class.getName());
     private static final String CONFIG_FILE_PATCH = new File(Constant.NAME_CONFIG_FILE).getAbsolutePath();
 
-    public void getSkipping() throws Exception {
+    public List<Skipping> getSkipping() throws Exception {
         List<Skipping> listConnection = new ArrayList<Skipping>();
         InputStream in = new FileInputStream(CONFIG_FILE_PATCH);
         Scanner s = new Scanner(in);
@@ -44,28 +43,41 @@ public class GetData {
 
 
             for (int count = 0; count < stringsArray.length; count++) {
-                System.out.println(stringsArray[count]);
 
                 if (stringsArray[count].isEmpty()) {
-                    addSkipping(localPort, remoteHost, remotePort);
-                    System.out.println(123);
-                }else {
+                    System.out.println("123456" + remoteHost + remotePort + localPort);
+                    listConnection.add(getSkipping(localPort, remoteHost, remotePort));
+                } else {
                     String stringType = checkTypeString(stringsArray[count]);
-
+                    System.out.println(stringType);
                     switch (stringType) {
                         case "localPort":
                             localPort = getPort(stringsArray[count]);
                             break;
-                        case "remoteHost ":
+                        case "remoteHost":
                             remoteHost = getRemoteHost(stringsArray[count]);
                             break;
-                        case "remotePort ":
+                        case "remotePort":
                             remotePort = getPort(stringsArray[count]);
                             break;
+                    }
+
+                    if (stringsArray.length == count + 1) {
+                        listConnection.add(getSkipping(localPort, remoteHost, remotePort));
                     }
                 }
             }
         }
+        return checkNullValue(listConnection);
+    }
+
+    private List<Skipping> checkNullValue(List<Skipping> listConnection) {
+        List<Skipping> skippingNoNull = new ArrayList<>();
+        for (Skipping skipping : listConnection) {
+            if (skipping != null)
+                skippingNoNull.add(skipping);
+        }
+        return skippingNoNull;
     }
 
     public boolean checkFile(String patch) {
@@ -80,9 +92,9 @@ public class GetData {
 
     private String checkTypeString(String line) {
         String re1 = ".*?";    // Non-greedy match on filler
-        String re2 = "(?:[a-z][a-z0-9_]*)";    // Uninteresting: var
+        String re2 = "(?:[a-z][a-z]+)";    // Uninteresting: word
         String re3 = ".*?";    // Non-greedy match on filler
-        String re4 = "((?:[a-z][a-z0-9_]*))";    // Variable Name 1
+        String re4 = "((?:[a-z][a-z]+))";    // Word 1
 
         Pattern p = Pattern.compile(re1 + re2 + re3 + re4, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         Matcher m = p.matcher(line);
@@ -93,27 +105,22 @@ public class GetData {
         return null;
     }
 
-    private void addSkipping(String localPort, String remoteHost, String remotePort) {
-
+    private Skipping getSkipping(String localPort, String remoteHost, String remotePort) throws IOException {
+        Skipping skipping;
         if (checkInputParams(localPort, remoteHost, remotePort)) {
-
-            Skipping skipping = new Skipping(Integer.parseInt(localPort), remoteHost, Integer.parseInt(remotePort));
-
+            return skipping = new Skipping(Integer.parseInt(localPort), remoteHost, Integer.parseInt(remotePort));
         }
+        return null;
     }
 
     private String getPort(String string) {
         String re1 = ".*?";    // Non-greedy match on filler
-        String re2 = "(?:[a-z][0-9_]*)";    // Uninteresting: var
-        String re3 = ".*?";    // Non-greedy match on filler
-        String re4 = "((?:[a-z][a-z0-9_]*))";    // Variable Name 1
-        String re5 = ".*?";    // Non-greedy match on filler
-        String re6 = "(\\d+)";    // Integer Number 1
+        String re2 = "(\\d+)";    // Integer Number 1
 
-        Pattern p = Pattern.compile(re1 + re2 + re3 + re4 + re5 + re6, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        Pattern p = Pattern.compile(re1 + re2, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         Matcher m = p.matcher(string);
         if (m.find()) {
-            String int1 = m.group(2);
+            String int1 = m.group(1);
             return int1.toString();
         }
         return null;
@@ -128,16 +135,13 @@ public class GetData {
         Pattern p = Pattern.compile(re1 + re2 + re3 + re4, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         Matcher m = p.matcher(string);
         if (m.find()) {
-            String fqdn1 = m.group(1);
-            return fqdn1.toString();
+            String int1 = m.group(1);
+            return int1.toString();
         }
         return null;
     }
 
     private boolean checkInputParams(String localPort, String remoteHost, String remotePort) {
-        System.out.println(localPort);
-        System.out.println(remoteHost);
-        System.out.println(remotePort);
         try {
             if (!localPort.equals(null)
                     && !remoteHost.equals(null)

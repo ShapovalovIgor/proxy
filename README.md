@@ -16,3 +16,6 @@ Build and Run
 1. Run in the command line:
 	```
 	mvn package
+	
+	
+Oracle recommendation https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html
