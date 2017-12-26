@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public class GetData {
     public GetData() throws IOException {
-        LogManager.getLogManager().readConfiguration(new FileInputStream(new File(Constant.LOG_CONFIG_FILE).getAbsolutePath()));
+ //       LogManager.getLogManager().readConfiguration(getClass().getResourceAsStream(Constant.LOG_CONFIG_FILE));
     }
 
     private static final Logger LOG = Logger.getLogger(GetData.class.getName());
