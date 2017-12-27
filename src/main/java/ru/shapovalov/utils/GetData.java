@@ -6,7 +6,6 @@ import ru.shapovalov.dao.Skipping;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.channels.FileChannel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -21,9 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GetData {
-    public GetData()  {
- //       LogManager.getLogManager().readConfiguration(getClass().getResourceAsStream(Constant.LOG_CONFIG_FILE));
-    }
 
     private static final Logger LOG = Logger.getLogger(GetData.class.getName());
     private static final String CONFIG_FILE_PATCH = new File(Constant.NAME_CONFIG_FILE).getAbsolutePath();
