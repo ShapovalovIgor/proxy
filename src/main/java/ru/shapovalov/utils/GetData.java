@@ -43,11 +43,9 @@ public class GetData {
             for (int count = 0; count < stringsArray.length; count++) {
 
                 if (stringsArray[count].isEmpty()) {
-                    System.out.println("123456" + remoteHost + remotePort + localPort);
                     listConnection.add(getSkipping(localPort, remoteHost, remotePort));
                 } else {
                     String stringType = checkTypeString(stringsArray[count]);
-                    System.out.println(stringType);
                     switch (stringType) {
                         case "localPort":
                             localPort = getPort(stringsArray[count]);

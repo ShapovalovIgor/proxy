@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 public class Main {
 
+    private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws Exception {
         GetData getData = new GetData();
@@ -27,7 +28,7 @@ public class Main {
             List<Skipping> skippingList = getData.getSkipping();
             ExecutorService pool = Executors.newFixedThreadPool(3);
             for (Skipping skipping : skippingList) {
-                System.out.println("test");
+                LOG.log(Level.INFO, "Start proxy Local port:" + skipping.getLocalPort() + " Remote host:" + skipping.getRemoteHost() + " Remote port:" + skipping.getRemotePort());
                 pool.submit(new Runnable() {
                     @Override
                     public void run() {
