@@ -2,7 +2,7 @@ Proxy
 =========
 
 Branch mame: proxy_trunk
-
+Technical task  mail.ru
 
 Prerequisites
 -------------
@@ -19,3 +19,4 @@ Build and Run
 	
 	
 Oracle recommendation https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html
+NIO totorial: https://docs.oracle.com/javase/tutorial/essential/io/file.html

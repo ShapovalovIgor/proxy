@@ -4,17 +4,13 @@ package ru.shapovalov.utils;
 import ru.shapovalov.Constant;
 import ru.shapovalov.dao.Skipping;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,43 +22,34 @@ public class GetData {
 
     public List<Skipping> getSkipping() throws Exception {
         List<Skipping> listConnection = new ArrayList<Skipping>();
-        InputStream in = new FileInputStream(CONFIG_FILE_PATCH);
-
-        Scanner s = new Scanner(in);
-        s.useDelimiter("(;(\r)?\n)|(--\n)");
-
-
         String localPort = null;
         String remoteHost = null;
         String remotePort = null;
-        while (s.hasNext()) {
-            String line = s.next();
-            String[] stringsArray = line.split("\\r\\n");
+        Charset charset = Charset.forName("US-ASCII");
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(CONFIG_FILE_PATCH), charset)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
 
-
-            for (int count = 0; count < stringsArray.length; count++) {
-
-                if (stringsArray[count].isEmpty()) {
+                if (line.isEmpty()) {
                     listConnection.add(getSkipping(localPort, remoteHost, remotePort));
                 } else {
-                    String stringType = checkTypeString(stringsArray[count]);
+                    String stringType = checkTypeString(line);
                     switch (stringType) {
                         case "localPort":
-                            localPort = getPort(stringsArray[count]);
+                            localPort = getPort(line);
                             break;
                         case "remoteHost":
-                            remoteHost = getRemoteHost(stringsArray[count]);
+                            remoteHost = getRemoteHost(line);
                             break;
                         case "remotePort":
-                            remotePort = getPort(stringsArray[count]);
+                            remotePort = getPort(line);
                             break;
-                    }
-
-                    if (stringsArray.length == count + 1) {
-                        listConnection.add(getSkipping(localPort, remoteHost, remotePort));
                     }
                 }
             }
+            listConnection.add(getSkipping(localPort, remoteHost, remotePort));
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
         }
         return checkNullValue(listConnection);
     }
@@ -91,7 +78,6 @@ public class GetData {
         String re2 = "(?:[a-z][a-z]+)";    // Uninteresting: word
         String re3 = ".*?";    // Non-greedy match on filler
         String re4 = "((?:[a-z][a-z]+))";    // Word 1
-
         Pattern p = Pattern.compile(re1 + re2 + re3 + re4, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         Matcher m = p.matcher(line);
         if (m.find()) {
