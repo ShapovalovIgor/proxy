@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class GetData {
 
-    private static final Logger LOG = Logger.getLogger(GetData.class.getName());
+    private static final Logger LOG = LogWriter.getLogger(GetData.class);
     private static final String CONFIG_FILE_PATCH = new File(Constant.NAME_CONFIG_FILE).getAbsolutePath();
 
     public List<Skipping> getSkipping() throws Exception {
